@@ -1,0 +1,72 @@
+﻿@page "/TempleOfWishes/V2"
+
+@using CPopeWebsite.Data.TempleOfWishes.V2
+@using CPopeWebsite.Data.TempleOfWishes.V2.Commands
+
+<h1>Temple Of Wishes - V2</h1>
+
+<p>Welcome to Version 2 of the Temple Of Wishes game, developed by Chandler Pope-Lewis.</p>
+<p>
+    Version 2 of Temple Of Wishes contains a lot more detail and gameplay than the previous version, now the map is generated randomly and is much larger
+    than the Temple that was in Version 1, there is now randomly placed items which can be looted however now items are not neccessarily guarded by an enemy,
+    and can even be guarded by multiple enemies (also not just being dragons!).
+    <br />
+
+    The objective of this game is to find the Temple Of Wishes within the world and defeat what lies within.
+
+    <br /> <br />
+    * A command list will be generated at the bottom of this page.
+</p>
+
+@if (game == null)
+{
+    <textarea name="gameView" disabled>Loading...</textarea>
+}
+else
+{
+    <textarea name="gameView" disabled>@game</textarea>
+    <br />
+    <input class="gameController" name="gameController" value="@controllerValue" @oninput="@(ui => { controllerValue = (string)ui.Value; })" @onkeypress="@playGame" />
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Command</th>
+                <th>Action</th>
+                <th>Aliases</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(TOWCommand command in Command.Commands.Values)
+            {
+                <tr>
+                    <th>@command.Name</th>
+                    <td>@command.Desc</td>
+                    <td>@command.Aliases</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private GameManager game;
+    private string controllerValue;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (game == null)
+        {
+            game = await GameManager.CreateGame();
+        }
+    }
+
+    protected void playGame(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            game.Play(controllerValue);
+            controllerValue = "";
+        }
+    }
+}

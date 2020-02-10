@@ -1,0 +1,59 @@
+﻿@page "/TempleOfWishes"
+
+<h1>Temple Of Wishes</h1>
+
+<p>Welcome to the Temple Of Wishes, developed by Chandler Pope-Lewis.</p>
+<p>
+    The Temple Of Wishes was originally created in Java during my time at the University of Liverpool, after finishing the Java module the 
+    game was convered into C# to be used on this website using .NET Core Blazor Pages. The original version (found under V1 on this page) is the exact
+    port from Java and consists on a very basic world with a few items and dragons, V2 will create a larger world with more items and mobs and V3 will
+    contain a world generated using Voronoi Diagrams.
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Version</th>
+            <th>Description</th>
+            <th>Play</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>V1</th>
+            <td>
+                <p>
+                    This is Version 1 of the Temple Of Wishes, this version contains a basic pre-generated Temple with randomly placed items
+                    and dragons, (each item is guarded by a dragon) there was no real objective to this version of the game.
+                </p>
+            </td>
+            <td>
+                <NavLink class="nav-link" href="TempleOfWishes/V1">
+                    Play
+                </NavLink>
+            </td>
+        </tr>
+        <tr>
+            <th>V2</th>
+            <td>
+                <p>
+                    Version 2 of Temple Of Wishes contains a lot more detail and gameplay than the previous version, now the map is generated randomly and is much larger
+                    than the Temple that was in Version 1, there is now randomly placed items which can be looted however now items are not neccessarily guarded by an enemy,
+                    and can even be guarded by multiple enemies (also not just being dragons!).
+                    <br />
+
+                    The objective of this game is to find the Temple Of Wishes within the world and defeat what lies within.
+                </p>
+            </td>
+            <td>
+                <NavLink class="nav-link" href="TempleOfWishes/V2">
+                    Play
+                </NavLink>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+@code {
+
+}

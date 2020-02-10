@@ -1,0 +1,91 @@
+﻿@page "/TempleOfWishes/V1"
+
+@using CPopeWebsite.Data.TempleOfWishes.V1
+
+<h1>Temple Of Wishes - V1</h1>
+
+<p>Welcome to Version 1 of the Temple Of Wishes game, developed by Chandler Pope-Lewis.</p>
+<p>
+    This is Version 1 of the Temple Of Wishes, this version contains a basic pre-generated Temple with randomly placed items
+    and dragons, (each item is guarded by a dragon) there was no real objective to this version of the game.
+</p>
+
+@if (game == null)
+{
+    <textarea name="gameView" disabled>Loading...</textarea>
+}
+else
+{
+    <textarea name="gameView" disabled>@game</textarea>
+    <br />
+    <input class="gameController" name="gameController" value="@controllerValue" @onkeypress="@playGame" @onkeypress:preventDefault />
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Command</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>n</td>
+            <td>Walk North</td>
+        </tr>
+        <tr>
+            <td>s</td>
+            <td>Walk South</td>
+        </tr>
+        <tr>
+            <td>e</td>
+            <td>Walk East</td>
+        </tr>
+        <tr>
+            <td>w</td>
+            <td>Walk West</td>
+        </tr>
+        <tr>
+            <td>f</td>
+            <td>Fight</td>
+        </tr>
+        <tr>
+            <td>i</td>
+            <td>Read Inventory</td>
+        </tr>
+        <tr>
+            <td>p</td>
+            <td>Pickup Item</td>
+        </tr>
+        <tr>
+            <td>r</td>
+            <td>Rest</td>
+        </tr>
+    </tbody>
+</table>
+
+@code {
+    private GameManager game;
+    private string controllerValue;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (game == null)
+        {
+            game = await GameManager.CreateGame();
+        }
+    }
+
+    protected void playGame(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            game.play(controllerValue.ToCharArray()[0]);
+            controllerValue = "";
+        }
+        else
+        {
+            controllerValue += args.Key;
+        }
+    }
+}

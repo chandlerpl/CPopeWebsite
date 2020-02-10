@@ -1,0 +1,88 @@
+﻿@page "/blog/newpost"
+@page "/blog/editpost/{PostId}"
+@layout BlogLayout
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@using CPopeWebsite.Data.Blog
+@using CPopeWebsite.Controllers
+@using System.Net.Http
+
+@attribute [Authorize(Policy = "RequireAdmin")]
+
+<BlogPostHeader Heading="CPope Blog" SubHeading=@(IsEdit ? "Edit Post" : "AddPost") />
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            @if (IsEdit)
+            {
+            <div class="editor">
+                <input @bind=@ExistingBlogPost.Title placeholder="Title" class="form-control" />
+                <textarea @bind=@ExistingBlogPost.Post placeholder="Write your post (Supports Markdown)" rows="25"></textarea>
+                <button class="btn btn-primary float-right" @onclick="@DeletePost">Delete</button>
+                <button class="btn btn-primary float-right" @onclick="@UpdatePost">Update</button>
+            </div>
+            }
+            else
+            {
+                <div class="editor">
+                    <input @bind=@Title placeholder="Title" class="form-control" />
+                    <textarea @bind=@Post placeholder="Write your post (Supports Markdown)" rows="25"></textarea>
+                    <button class="btn btn-primary float-right" @onclick="@SavePost">Post</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string PostId { get; set; }
+
+    protected string Post { get; set; }
+    protected string Title { get; set; }
+    protected int CharacterCount { get; set; }
+    protected BlogPost ExistingBlogPost { get; set; } = new BlogPost();
+    protected bool IsEdit => string.IsNullOrEmpty(PostId) ? false : true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(PostId))
+        {
+            await LoadPost();
+        }
+    }
+
+    public async Task SavePost()
+    {
+        var newPost = new BlogPost()
+        {
+            Title = Title,
+            Author = "Chandler Pope-Lewis",
+            Post = Post,
+            Posted = DateTime.Now
+        };
+
+        var savedPost = await Http.PostJsonAsync<BlogPost>(Urls.PostBlogPost, newPost);
+        NavigationManager.NavigateTo($"blog/blogpost/{savedPost.Id}");
+    }
+
+    public async Task UpdatePost()
+    {
+        await Http.PutJsonAsync(Urls.UpdateBlogPost.Replace("{id}", PostId), ExistingBlogPost);
+
+        NavigationManager.NavigateTo($"blog/blogpost/{ExistingBlogPost.Id}");
+    }
+
+    private async Task LoadPost()
+    {
+        ExistingBlogPost = await Http.GetJsonAsync<BlogPost>(Urls.BlogPost.Replace("{id}", PostId));
+        CharacterCount = ExistingBlogPost.Post.Length;
+    }
+
+    public async Task DeletePost() 
+    {
+        await Http.DeleteAsync(Urls.DeleteBlogPost.Replace("{id}", ExistingBlogPost.Id.ToString()));
+
+        NavigationManager.NavigateTo("/blog/");
+    }
+}

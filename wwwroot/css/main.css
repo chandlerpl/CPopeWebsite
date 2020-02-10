@@ -1,0 +1,14 @@
+﻿body {
+}
+
+textarea:disabled {
+    resize: none;
+    width: 50vw;
+    height: 50vh;
+}
+
+.gameController {
+    resize: none;
+    width: 50vw;
+    height: 2em;
+}

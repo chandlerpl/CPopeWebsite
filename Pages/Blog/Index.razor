@@ -1,0 +1,40 @@
+﻿@page "/blog/"
+@page "/blog/index"
+@layout BlogLayout
+@using CPopeWebsite.Data.Blog
+@using System.Net.Http
+@using CPopeWebsite.Controllers
+
+@inject HttpClient Http
+
+<BlogPostHeader Heading="CPope Blog" SubHeading="A Blazor Powered Blogging App"></BlogPostHeader>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            @blog
+            @foreach (var post in blogPosts)
+            {
+                <BlogPostPreview BlogPost=@post></BlogPostPreview>
+                <hr />
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    protected List<BlogPost> blogPosts { get; set; } = new List<BlogPost>();
+    protected string blog { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBlogPosts();
+    }
+
+    private async Task LoadBlogPosts()
+    {
+        //blog = await Http.GetStringAsync("BlogPost");
+        var blogPostsResponse = await Http.GetJsonAsync<List<BlogPost>>(Urls.BlogPosts);
+        blogPosts = blogPostsResponse.OrderByDescending(p => p.Posted).ToList();
+    }
+}

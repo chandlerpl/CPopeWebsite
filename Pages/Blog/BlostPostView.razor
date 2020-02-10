@@ -1,0 +1,47 @@
+﻿@page "/blog/blogpost/{postId}"
+@layout BlogLayout
+@inject HttpClient Http
+@using CPopeWebsite.Controllers
+@using CPopeWebsite.Data.Blog
+@using Markdig
+@using Markdig.SyntaxHighlighting
+
+<BlogPostHeader Heading=@_blogPost.Title Author=@_blogPost.Author PostedDate=@_blogPost.Posted></BlogPostHeader>
+
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                @((MarkupString)_blogPost.Post)
+                <AuthorizeView Roles="Admin">
+                    <Authorized>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <NavLink class="btn btn-primary float-right" href="@($"/blog/editpost/{_blogPost.Id}")">Edit</NavLink>
+                            </div>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+        </div>
+    </div>
+
+</article>
+
+@code {
+    [Parameter] public string PostId { get; set; }
+
+    protected BlogPost _blogPost { get; set; } = new BlogPost();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBlogPost();
+    }
+
+    private async Task LoadBlogPost()
+    {
+        _blogPost = await Http.GetJsonAsync<BlogPost>(Urls.BlogPost.Replace("{id}", PostId));
+        var pipeline = new MarkdownPipelineBuilder().UseSyntaxHighlighting().UseEmojiAndSmiley().Build();
+        _blogPost.Post = Markdown.ToHtml(_blogPost.Post, pipeline);
+    }
+}
