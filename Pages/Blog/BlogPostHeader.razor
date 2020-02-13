@@ -11,7 +11,7 @@
                     }
                     @if (Author != null && PostedDate != null)
                     {
-                        <span class="meta">Posted by <a href="#">@Author</a> on @PostedDate.ToShortDateString()</span>
+                        <span class="meta">Posted by <a href="#">@Author</a> on @PostedDate.ToString("dd/MM/yyyy HH:mm")</span>
                     }
                 </div>
             </div>

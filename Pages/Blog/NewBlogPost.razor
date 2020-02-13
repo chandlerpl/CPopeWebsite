@@ -3,8 +3,6 @@
 @layout BlogLayout
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
-@using CPopeWebsite.Data.Blog
-@using CPopeWebsite.Controllers
 @using System.Net.Http
 
 @attribute [Authorize(Policy = "RequireAdmin")]
@@ -13,24 +11,26 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-12">
-            @if (IsEdit)
-            {
+        <div class="col-md-auto">
             <div class="editor">
-                <input @bind=@ExistingBlogPost.Title placeholder="Title" class="form-control" />
-                <textarea @bind=@ExistingBlogPost.Post placeholder="Write your post (Supports Markdown)" rows="25"></textarea>
-                <button class="btn btn-primary float-right" @onclick="@DeletePost">Delete</button>
-                <button class="btn btn-primary float-right" @onclick="@UpdatePost">Update</button>
-            </div>
-            }
-            else
-            {
-                <div class="editor">
+                @if (IsEdit)
+                {
+                    <input @bind=@ExistingBlogPost.Title placeholder="Title" class="form-control" />
+                    <InputFile OnChange="HandleSelection" />
+                    <p>@status</p>
+                    <button class="btn btn-primary float-right" @onclick="@DeletePost">Delete</button>
+                    <button class="btn btn-primary float-right" @onclick="@UpdatePost">Update</button>
+                    <textarea @bind=@ExistingBlogPost.Post placeholder="Write your post (Supports Markdown)" rows="20" class="form-control"></textarea>
+                }
+                else
+                {
                     <input @bind=@Title placeholder="Title" class="form-control" />
-                    <textarea @bind=@Post placeholder="Write your post (Supports Markdown)" rows="25"></textarea>
+                    <InputFile OnChange="HandleSelection" />
+                    <p>@status</p>
                     <button class="btn btn-primary float-right" @onclick="@SavePost">Post</button>
-                </div>
-            }
+                    <textarea @bind=@Post placeholder="Write your post (Supports Markdown)" rows="20" class="form-control"></textarea>
+                }
+            </div>
         </div>
     </div>
 </div>
@@ -43,6 +43,26 @@
     protected int CharacterCount { get; set; }
     protected BlogPost ExistingBlogPost { get; set; } = new BlogPost();
     protected bool IsEdit => string.IsNullOrEmpty(PostId) ? false : true;
+
+    string status;
+
+    async Task HandleSelection(IFileListEntry[] files)
+    {
+            status = "Please wait...";
+
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            var ms = new MemoryStream();
+            await file.Data.CopyToAsync(ms);
+
+            var content = new MultipartFormDataContent {
+                { new ByteArrayContent(ms.GetBuffer()), "\"" + Urls.UploadImage + "\"", file.Name }
+            };
+            await Http.PostAsync(Urls.UploadImage, content);
+            status = "Uploaded! Available at: ../images/" + file.Name;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,7 +79,7 @@
             Title = Title,
             Author = "Chandler Pope-Lewis",
             Post = Post,
-            Posted = DateTime.Now
+            Posted = DateTime.UtcNow
         };
 
         var savedPost = await Http.PostJsonAsync<BlogPost>(Urls.PostBlogPost, newPost);
@@ -79,7 +99,7 @@
         CharacterCount = ExistingBlogPost.Post.Length;
     }
 
-    public async Task DeletePost() 
+    public async Task DeletePost()
     {
         await Http.DeleteAsync(Urls.DeleteBlogPost.Replace("{id}", ExistingBlogPost.Id.ToString()));
 

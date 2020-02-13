@@ -9,6 +9,7 @@ namespace CPopeWebsite.Data.Blog
     public class BlogPostService
     {
         private const string READALL = "SELECT * FROM [dbo].[BlogPosts];";
+        private const string SETID = "SET IDENTITY_INSERT [dbo].[BlogPosts] ON";
         private const string INSERT = "INSERT INTO [dbo].[BlogPosts] (ID, Author, Title, Posted, Post) VALUES (@ID, @Author, @Title, @Posted, @Post);";
         private const string UPDATE = "UPDATE [dbo].[BlogPosts] SET Title=@Title, Post=@Post WHERE ID=@ID;";
         private const string DELETE = "DELETE FROM [dbo].[BlogPosts] WHERE ID=@ID;";
@@ -20,7 +21,6 @@ namespace CPopeWebsite.Data.Blog
         {
             this.sql = sql;
 
-            Console.WriteLine("Test");
             if (_blogPosts == null)
             {
                 _blogPosts = new List<BlogPost>();
@@ -32,10 +32,10 @@ namespace CPopeWebsite.Data.Blog
                     _blogPosts.Add(new BlogPost()
                     {
                         Id = reader.GetInt32(0),
-                        Author = reader.GetString(1),
-                        Title = reader.GetString(2),
-                        Posted = reader.GetDateTime(3),
-                        Post = reader.GetString(4)
+                        Author = !reader.IsDBNull(1) ? reader.GetString(1) : "Missing Author Data",
+                        Title = !reader.IsDBNull(2) ? reader.GetString(2) : "Missing Title Data",
+                        Posted = !reader.IsDBNull(3) ? reader.GetDateTime(3) : DateTime.Parse("1900-01-01T00:00:00:00.0000000"),
+                        Post = !reader.IsDBNull(4) ? reader.GetString(4) : "Missing Post Data"
                     });
                 }
             }
@@ -53,23 +53,27 @@ namespace CPopeWebsite.Data.Blog
 
         public BlogPost AddBlogPost(BlogPost newBlogPost)
         {
+            if (_blogPosts.Count > 0)
+                newBlogPost.Id = _blogPosts.Last().Id + 1;
+            else
+                newBlogPost.Id = 0;
+
+            using SqlCommand set = new SqlCommand(SETID, sql);
+            set.ExecuteNonQuery();
+
+            using SqlCommand command = new SqlCommand(INSERT, sql);
+            command.Parameters.AddWithValue("@ID", newBlogPost.Id);
+            command.Parameters.AddWithValue("@Author", newBlogPost.Author);
+            command.Parameters.AddWithValue("@Title", newBlogPost.Title);
+            command.Parameters.AddWithValue("@Posted", newBlogPost.Posted);
+            command.Parameters.AddWithValue("@Post", newBlogPost.Post);
+            command.ExecuteNonQuery();
+
+            _blogPosts.Add(newBlogPost);
+            return newBlogPost;
             try
             {
-                if (_blogPosts.Count > 0)
-                    newBlogPost.Id = _blogPosts.Last().Id + 1;
-                else
-                    newBlogPost.Id = 0;
 
-                using SqlCommand command = new SqlCommand(INSERT, sql);
-                command.Parameters.AddWithValue("@ID", newBlogPost.Id);
-                command.Parameters.AddWithValue("@Author", newBlogPost.Author);
-                command.Parameters.AddWithValue("@Title", newBlogPost.Title);
-                command.Parameters.AddWithValue("@Posted", newBlogPost.Posted);
-                command.Parameters.AddWithValue("@Post", newBlogPost.Post);
-                command.ExecuteNonQuery();
-
-                _blogPosts.Add(newBlogPost);
-                return newBlogPost;
             }
             catch
             {

@@ -16,8 +16,12 @@ namespace CPopeWebsite.Data.Blog
         {
             get
             {
-                if (Post.Length > 50)
-                    return Post.Substring(0, 50);
+                int sentence = Post.IndexOf('.');
+                if (sentence != 0)
+                    return Post.Substring(0, sentence + 1);
+
+                if (Post.Length > 100)
+                    return Post.Substring(0, 100);
 
                 return Post;
             }

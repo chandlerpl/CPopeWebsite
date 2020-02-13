@@ -12,3 +12,8 @@ textarea:disabled {
     width: 50vw;
     height: 2em;
 }
+
+.post-preview a {
+    color: #212529;
+    font-weight: 400;
+}

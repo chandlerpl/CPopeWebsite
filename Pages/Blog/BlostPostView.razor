@@ -1,18 +1,16 @@
 ﻿@page "/blog/blogpost/{postId}"
 @layout BlogLayout
 @inject HttpClient Http
-@using CPopeWebsite.Controllers
-@using CPopeWebsite.Data.Blog
 @using Markdig
 @using Markdig.SyntaxHighlighting
 
 <BlogPostHeader Heading=@_blogPost.Title Author=@_blogPost.Author PostedDate=@_blogPost.Posted></BlogPostHeader>
 
+<br />
 <article>
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-md-10 mx-auto">
-                @((MarkupString)_blogPost.Post)
+            <div class="col-lg-8 col-md-auto mx-auto">
                 <AuthorizeView Roles="Admin">
                     <Authorized>
                         <div class="row">
@@ -22,10 +20,10 @@
                         </div>
                     </Authorized>
                 </AuthorizeView>
+                @((MarkupString)_blogPost.Post)
             </div>
         </div>
     </div>
-
 </article>
 
 @code {
@@ -41,7 +39,7 @@
     private async Task LoadBlogPost()
     {
         _blogPost = await Http.GetJsonAsync<BlogPost>(Urls.BlogPost.Replace("{id}", PostId));
-        var pipeline = new MarkdownPipelineBuilder().UseSyntaxHighlighting().UseEmojiAndSmiley().Build();
+        var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().UseSyntaxHighlighting().UseEmojiAndSmiley().Build();
         _blogPost.Post = Markdown.ToHtml(_blogPost.Post, pipeline);
     }
 }

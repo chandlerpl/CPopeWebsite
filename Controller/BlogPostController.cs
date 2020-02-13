@@ -6,7 +6,7 @@ using CPopeWebsite.Data.Blog;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CPopeWebsite.Controllers
+namespace CPopeWebsite.Controller
 {
     [ApiController]
     public class BlogPostController : ControllerBase

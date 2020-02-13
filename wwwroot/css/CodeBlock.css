@@ -2,14 +2,13 @@
     height: auto;
     width: 90%;
     padding: 15px;
-    margin: 0px auto 0px auto;
+    margin: 0px auto 2em auto;
     display: block;
     background: #f1f1f1;
     color: #000000;
     border: 1px #000000 solid;
     border-radius: 16px;
 }
-
 
 .plainText {
     color: #000000;

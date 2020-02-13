@@ -5,14 +5,12 @@
         <h2 class="post-title">
             @blogPost.Title
         </h2>
-        <h3 class="post-subtitle">
-            @blogPost.PostSummary
-        </h3>
+        @((MarkupString)blogPost.PostSummary)
     </NavLink>
     <p class="post-meta">
         Posted by
         <NavLink href="/">@blogPost.Author</NavLink>
-        on @blogPost.Posted
+        on @blogPost.Posted.ToString("dd/MM/yyyy HH:mm")
     </p>
 </div>
 
