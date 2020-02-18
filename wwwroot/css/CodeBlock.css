@@ -27,6 +27,19 @@
     color: #0000FF;
 }
 
+
+element.style {
+}
+
+#Education th {
+    background-color: lavender;
+}
+
+th, td {
+    border: 1px solid black;
+    text-wrap: normal;
+}
+
 .htmlElementName {
     color: #A31515;
 }

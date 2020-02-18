@@ -15,20 +15,24 @@
             <div class="editor">
                 @if (IsEdit)
                 {
-                    <input @bind=@ExistingBlogPost.Title placeholder="Title" class="form-control" />
-                    <InputFile OnChange="HandleSelection" />
-                    <p>@status</p>
-                    <button class="btn btn-primary float-right" @onclick="@DeletePost">Delete</button>
-                    <button class="btn btn-primary float-right" @onclick="@UpdatePost">Update</button>
-                    <textarea @bind=@ExistingBlogPost.Post placeholder="Write your post (Supports Markdown)" rows="20" class="form-control"></textarea>
+                <input @bind=@ExistingBlogPost.Title placeholder="Title" class="form-control" />
+                <InputFile OnChange="HandleSelection" />
+                <p>@status</p>
+                <button class="btn btn-primary float-right" @onclick="@DeletePost">Delete</button>
+                <button class="btn btn-primary float-right" @onclick="@UpdatePost">Update</button>
+                <label class="float-right">Publish</label>
+                <input type="checkbox" class="float-right" @bind=@ExistingBlogPost.Publish />
+                <textarea @bind=@ExistingBlogPost.Post placeholder="Write your post (Supports Markdown)" rows="20" class="form-control"></textarea>
                 }
                 else
                 {
-                    <input @bind=@Title placeholder="Title" class="form-control" />
-                    <InputFile OnChange="HandleSelection" />
-                    <p>@status</p>
-                    <button class="btn btn-primary float-right" @onclick="@SavePost">Post</button>
-                    <textarea @bind=@Post placeholder="Write your post (Supports Markdown)" rows="20" class="form-control"></textarea>
+                <input @bind=@Title placeholder="Title" class="form-control" />
+                <InputFile OnChange="HandleSelection" />
+                <p>@status</p>
+                <button class="btn btn-primary float-right" @onclick="@SavePost">Post</button>
+                <label class="float-right">Publish</label>
+                <input type="checkbox" class="float-right" @bind=@Publish />
+                <textarea @bind=@Post placeholder="Write your post (Supports Markdown)" rows="20" class="form-control"></textarea>
                 }
             </div>
         </div>
@@ -40,6 +44,8 @@
 
     protected string Post { get; set; }
     protected string Title { get; set; }
+    protected bool Publish { get; set; }
+
     protected int CharacterCount { get; set; }
     protected BlogPost ExistingBlogPost { get; set; } = new BlogPost();
     protected bool IsEdit => string.IsNullOrEmpty(PostId) ? false : true;
@@ -48,7 +54,7 @@
 
     async Task HandleSelection(IFileListEntry[] files)
     {
-            status = "Please wait...";
+        status = "Please wait...";
 
         var file = files.FirstOrDefault();
         if (file != null)
@@ -79,7 +85,8 @@
             Title = Title,
             Author = "Chandler Pope-Lewis",
             Post = Post,
-            Posted = DateTime.UtcNow
+            Posted = DateTime.UtcNow,
+            Publish = Publish
         };
 
         var savedPost = await Http.PostJsonAsync<BlogPost>(Urls.PostBlogPost, newPost);

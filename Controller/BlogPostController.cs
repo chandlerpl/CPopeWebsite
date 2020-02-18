@@ -51,7 +51,7 @@ namespace CPopeWebsite.Controller
                 return Created(new Uri(Urls.BlogPost.Replace("{id}", savedBlogPost.Id.ToString()), UriKind.Relative), savedBlogPost);
             } else
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -60,7 +60,7 @@ namespace CPopeWebsite.Controller
         [HttpPut]
         public IActionResult Put(int id, [FromBody]BlogPost value)
         {
-            if (_blogPostService.UpdateBlogPost(id, value.Post, value.Title))
+            if (_blogPostService.UpdateBlogPost(id, value))
             {
                 return Ok();
             }

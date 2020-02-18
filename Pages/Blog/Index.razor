@@ -15,8 +15,20 @@
             @blog
             @foreach (var post in blogPosts)
             {
-                <BlogPostPreview BlogPost=@post></BlogPostPreview>
-                <hr />
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <BlogPostPreview BlogPost=@post></BlogPostPreview>
+                    <hr />
+                </Authorized>
+                <NotAuthorized>
+                    @if (post.Publish)
+                    {
+                    <BlogPostPreview BlogPost=@post></BlogPostPreview>
+                    <hr />
+                    }
+                </NotAuthorized>
+            </AuthorizeView>
+
             }
         </div>
     </div>

@@ -26,5 +26,7 @@ namespace CPopeWebsite.Data.Blog
                 return Post;
             }
         }
+
+        public bool Publish { get; set; }
     }
 }

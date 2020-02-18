@@ -18,6 +18,7 @@ using CPopeWebsite.Data.Blog;
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace CPopeWebsite
 {
@@ -81,8 +82,6 @@ namespace CPopeWebsite
                 options.AddPolicy("RequireAdmin", c => c.RequireRole("Admin"));
             });
 
-
-
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
@@ -125,6 +124,11 @@ namespace CPopeWebsite
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            var options = new RewriteOptions();
+            options.AddRedirectToHttps();
+            options.Rules.Add(new RedirectToWwwRule());
+            app.UseRewriter(options);
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
