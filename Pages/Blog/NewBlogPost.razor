@@ -13,27 +13,14 @@
     <div class="row">
         <div class="col-md-auto">
             <div class="editor">
-                @if (IsEdit)
-                {
-                <input @bind=@ExistingBlogPost.Title placeholder="Title" class="form-control" />
+                <input @bind=@blogPost.Title placeholder="Title" class="form-control" />
                 <InputFile OnChange="HandleSelection" />
                 <p>@status</p>
                 <button class="btn btn-primary float-right" @onclick="@DeletePost">Delete</button>
-                <button class="btn btn-primary float-right" @onclick="@UpdatePost">Update</button>
+                <button class="btn btn-primary float-right" @onclick="@UpdatePost">Save</button>
                 <label class="float-right">Publish</label>
-                <input type="checkbox" class="float-right" @bind=@ExistingBlogPost.Publish />
-                <textarea @bind=@ExistingBlogPost.Post placeholder="Write your post (Supports Markdown)" rows="20" class="form-control"></textarea>
-                }
-                else
-                {
-                <input @bind=@Title placeholder="Title" class="form-control" />
-                <InputFile OnChange="HandleSelection" />
-                <p>@status</p>
-                <button class="btn btn-primary float-right" @onclick="@SavePost">Post</button>
-                <label class="float-right">Publish</label>
-                <input type="checkbox" class="float-right" @bind=@Publish />
-                <textarea @bind=@Post placeholder="Write your post (Supports Markdown)" rows="20" class="form-control"></textarea>
-                }
+                <input type="checkbox" class="float-right" @bind=@blogPost.Publish />
+                <textarea @bind=@blogPost.Post placeholder="Write your post (Supports Markdown)" rows="20" class="form-control"></textarea>
             </div>
         </div>
     </div>
@@ -42,12 +29,8 @@
 @code {
     [Parameter] public string PostId { get; set; }
 
-    protected string Post { get; set; }
-    protected string Title { get; set; }
-    protected bool Publish { get; set; }
-
     protected int CharacterCount { get; set; }
-    protected BlogPost ExistingBlogPost { get; set; } = new BlogPost();
+    protected BlogPost blogPost { get; set; } = new BlogPost();
     protected bool IsEdit => string.IsNullOrEmpty(PostId) ? false : true;
 
     string status;
@@ -70,11 +53,25 @@
         }
     }
 
+    static AutoSave autoSave;
+
     protected override async Task OnInitializedAsync()
     {
+        if(autoSave != null) 
+        {
+            autoSave.Dispose();
+            autoSave = null;
+        }
+
+        autoSave = new AutoSave();
+        autoSave.autoSave += async () => { await AutoSavePost(); };
+
         if (!string.IsNullOrEmpty(PostId))
         {
             await LoadPost();
+        } else
+        {
+            await SavePost();
         }
     }
 
@@ -82,33 +79,45 @@
     {
         var newPost = new BlogPost()
         {
-            Title = Title,
+            Title = "Title",
             Author = "Chandler Pope-Lewis",
-            Post = Post,
+            Post = "",
             Posted = DateTime.UtcNow,
-            Publish = Publish
+            Publish = false
         };
 
-        var savedPost = await Http.PostJsonAsync<BlogPost>(Urls.PostBlogPost, newPost);
-        NavigationManager.NavigateTo($"blog/blogpost/{savedPost.Id}");
+        blogPost = await Http.PostJsonAsync<BlogPost>(Urls.PostBlogPost, newPost);
+    }
+
+    public async Task AutoSavePost()
+    {
+        if (NavigationManager.Uri.Contains("newpost") || NavigationManager.Uri.Contains("editpost"))
+            await Http.PutJsonAsync(Urls.UpdateBlogPost.Replace("{id}", blogPost.Id.ToString()), blogPost);
+        else
+        {
+            autoSave.Dispose();
+            autoSave = null;
+        }
     }
 
     public async Task UpdatePost()
     {
-        await Http.PutJsonAsync(Urls.UpdateBlogPost.Replace("{id}", PostId), ExistingBlogPost);
+        await Http.PutJsonAsync(Urls.UpdateBlogPost.Replace("{id}", blogPost.Id.ToString()), blogPost);
+        autoSave.Dispose();
 
-        NavigationManager.NavigateTo($"blog/blogpost/{ExistingBlogPost.Id}");
+        NavigationManager.NavigateTo($"blog/blogpost/{blogPost.Id}");
     }
 
     private async Task LoadPost()
     {
-        ExistingBlogPost = await Http.GetJsonAsync<BlogPost>(Urls.BlogPost.Replace("{id}", PostId));
-        CharacterCount = ExistingBlogPost.Post.Length;
+        blogPost = await Http.GetJsonAsync<BlogPost>(Urls.BlogPost.Replace("{id}", PostId));
+        CharacterCount = blogPost.Post.Length;
     }
 
     public async Task DeletePost()
     {
-        await Http.DeleteAsync(Urls.DeleteBlogPost.Replace("{id}", ExistingBlogPost.Id.ToString()));
+        await Http.DeleteAsync(Urls.DeleteBlogPost.Replace("{id}", blogPost.Id.ToString()));
+        autoSave.Dispose();
 
         NavigationManager.NavigateTo("/blog/");
     }

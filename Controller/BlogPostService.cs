@@ -34,7 +34,7 @@ namespace CPopeWebsite.Data.Blog
                     {
                         Id = reader.GetInt32(0),
                         Author = !reader.IsDBNull(1) ? reader.GetString(1) : "Missing Author Data",
-                        Title = !reader.IsDBNull(2) ? reader.GetString(2) : "Missing Title Data",
+                        Title = !reader.IsDBNull(2) ? reader.GetString(2) == "" ? "Title" : reader.GetString(2) : "Missing Title Data",
                         Posted = !reader.IsDBNull(3) ? reader.GetDateTime(3) : DateTime.Parse("1900-01-01T00:00:00:00.0000000"),
                         Post = !reader.IsDBNull(4) ? reader.GetString(4) : "Missing Post Data",
                         Publish = !reader.IsDBNull(5) ? reader.GetBoolean(5) : false,
@@ -76,14 +76,6 @@ namespace CPopeWebsite.Data.Blog
             _blogPosts.Add(newBlogPost);
             return newBlogPost;
 
-            try
-            {
-
-            }
-            catch
-            {
-                return null;
-            }
         }
 
         public bool UpdateBlogPost(int postId, BlogPost updatedBlogPost)

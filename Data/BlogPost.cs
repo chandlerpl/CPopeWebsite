@@ -16,7 +16,7 @@ namespace CPopeWebsite.Data.Blog
         {
             get
             {
-                int sentence = Post.IndexOf('.');
+                int sentence = Post.IndexOfAny(new char[] { '.', '!', '?', ';' });
                 if (sentence != 0)
                     return Post.Substring(0, sentence + 1);
 

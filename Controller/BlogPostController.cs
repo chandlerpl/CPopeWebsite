@@ -18,7 +18,6 @@ namespace CPopeWebsite.Controller
             _blogPostService = blogPostService;
         }
 
-        // GET: api/BlogPost
         [Route(Urls.BlogPosts)]
         [HttpGet]
         public IActionResult Get()
@@ -26,7 +25,6 @@ namespace CPopeWebsite.Controller
             return Ok(_blogPostService.GetBlogPosts());
         }
 
-        // GET: api/BlogPost/5
         [Route(Urls.BlogPost)]
         [HttpGet]
         public IActionResult Get(int id)
@@ -39,7 +37,6 @@ namespace CPopeWebsite.Controller
             return Ok(blogPost);
         }
 
-        // POST: api/BlogPost
         [Route(Urls.PostBlogPost)]
         [HttpPost]
         public IActionResult AddBlogPost([FromBody]BlogPost newBlogPost)
@@ -55,7 +52,6 @@ namespace CPopeWebsite.Controller
             }
         }
 
-        // PUT: api/BlogPost/5
         [Route(Urls.UpdateBlogPost)]
         [HttpPut]
         public IActionResult Put(int id, [FromBody]BlogPost value)
