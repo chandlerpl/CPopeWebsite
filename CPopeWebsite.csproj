@@ -25,22 +25,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="ColorCode.Core">
-      <HintPath>..\..\..\Desktop\ColorCode-Universal-master\Markdig.SyntaxHighlighting\bin\Debug\netstandard2.0\ColorCode.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="ColorCode.HTML">
-      <HintPath>..\..\..\Desktop\ColorCode-Universal-master\Markdig.SyntaxHighlighting\bin\Debug\netstandard2.0\ColorCode.HTML.dll</HintPath>
-    </Reference>
-    <Reference Include="Markdig.SyntaxHighlighting">
-      <HintPath>..\..\..\Desktop\ColorCode-Universal-master\Markdig.SyntaxHighlighting\bin\Debug\netstandard2.0\Markdig.SyntaxHighlighting.dll</HintPath>
-    </Reference>
-    <Reference Include="StaticNoiseGen">
-      <HintPath>..\StaticNoiseGen\bin\Debug\netstandard2.0\StaticNoiseGen.dll</HintPath>
-    </Reference>
+    <Folder Include="images\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="images\" />
+    <Reference Include="ColorCode.Core">
+      <HintPath>..\Imports\ColorCode.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ColorCode.HTML">
+      <HintPath>..\Imports\ColorCode.HTML.dll</HintPath>
+    </Reference>
+    <Reference Include="Markdig.SyntaxHighlighting">
+      <HintPath>..\Imports\Markdig.SyntaxHighlighting.dll</HintPath>
+    </Reference>
+    <Reference Include="StaticNoiseGen">
+      <HintPath>..\Imports\StaticNoiseGen.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -29,35 +29,38 @@ namespace CPopeWebsite.Data.TempleOfWishes.V2.Characters
                 switch (dir)
                 {
                     case Directions.North:
-                        CurrTile = GameManager.Tiles[CurrTile.Y - 1, CurrTile.X];
-                        break;
+                        return Move(CurrTile.Y - 1, CurrTile.X);
                     case Directions.Northeast:
-                        CurrTile = GameManager.Tiles[CurrTile.Y - 1, CurrTile.X - 1];
-                        break;
+                        return Move(CurrTile.Y - 1, CurrTile.X - 1);
                     case Directions.East:
-                        CurrTile = GameManager.Tiles[CurrTile.Y, CurrTile.X - 1];
-                        break;
+                        return Move(CurrTile.Y, CurrTile.X - 1);
                     case Directions.Southeast:
-                        CurrTile = GameManager.Tiles[CurrTile.Y + 1, CurrTile.X - 1];
-                        break;
+                        return Move(CurrTile.Y + 1, CurrTile.X - 1);
                     case Directions.South:
-                        CurrTile = GameManager.Tiles[CurrTile.Y + 1, CurrTile.X];
-                        break;
+                        return Move(CurrTile.Y + 1, CurrTile.X);
                     case Directions.Southwest:
-                        CurrTile = GameManager.Tiles[CurrTile.Y + 1, CurrTile.X + 1];
-                        break;
+                        return Move(CurrTile.Y + 1, CurrTile.X + 1);
                     case Directions.West:
-                        CurrTile = GameManager.Tiles[CurrTile.Y, CurrTile.X + 1];
-                        break;
+                        return Move(CurrTile.Y, CurrTile.X + 1);
                     case Directions.Northwest:
-                        CurrTile = GameManager.Tiles[CurrTile.Y - 1, CurrTile.X + 1];
-                        break;
+                        return Move(CurrTile.Y - 1, CurrTile.X + 1);
                 }
 
                 return true;
             }
 
             return false;
+        }
+
+        private bool Move(int Y, int X)
+        {
+            if (Y < 0 || X < 0 || Y > GameManager.Tiles.GetLength(0) - 1 || X > GameManager.Tiles.GetLength(1) - 1)
+                return false;
+            else
+            { 
+                CurrTile = GameManager.Tiles[Y, X];
+                return true;
+            }
         }
 
         // TODO: public bool pickupItem() { }
